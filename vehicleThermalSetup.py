@@ -440,7 +440,7 @@ if (runMode=="setup"):
                                                                                           
     indent(root)
     elapsed = time.time() - begin
-    print ("Time taken to populate conditions: %.4f secs. Writing .spro now..." %(elapsed))
+    print ("Time taken to populate conditions: %.4f secs. Writing .spro file now..." %(elapsed))
     tree.write(finalProject,encoding=xml_encoding)
     
 
