@@ -144,6 +144,11 @@ if(runMode != "create" and runMode != "setup"):
     raw_input("Press enter to continue") 
     exit()
 
+if(initialProject==finalProject):
+    print("Error! Input and Output project names canot be the same. Please correct input and submit again.")
+    raw_input("Press enter to continue") 
+    exit()
+
 xml_encoding="ISO-8859-1"
 
 materials=[]
@@ -178,9 +183,9 @@ interfaces=[]
 volumes=[]
 
 for module in root.getiterator('module'):
-    if(module.get("type")=="flow"):
+    if(module.get("type")=="heat"):
         for bc in module.getiterator('bc'):
-            if (bc.get('type')=="default_interface"):
+            if (bc.get('type')=="default_interface" or bc.get('type')=="conjugate_wall"):
                 interfaces.append(bc.get('patch'))
             else:
                 boundaries.append(bc.get('patch'))
@@ -398,6 +403,10 @@ if (runMode=="setup"):
                 bc.set('patch',boundaries[i])                 
                 bc.set('type','fix_flux')
                 bc.set('value',boundaryFlux)  
+            elif(boundaryType=="heatflux" and float(boundaryFlux)==0):
+                bc=ET.SubElement(module,'bc')                          
+                bc.set('patch',boundaries[i])                 
+                bc.set('type','adiabatic')
 
     module= ET.SubElement(root,'module')
     module.set('type','radiation')
@@ -436,7 +445,11 @@ if (runMode=="setup"):
             bc=ET.SubElement(module,'bc')                        
             bc.set('patch',interfaces[i])
             bc.set('type','radiate_intf')
-            bc.set('emissivity',boundaryEmiss)                
+            bc.set('emissivity',boundaryEmiss)  
+
+    module= ET.SubElement(root,'module')
+    module.set('type','turbulence')
+    module.set('state','active')               
                                                                                           
     indent(root)
     elapsed = time.time() - begin
