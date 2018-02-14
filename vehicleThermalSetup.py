@@ -36,7 +36,8 @@ def getBaseName(name):
 def getBoundaryName(name):
     splitName = name.split('_i')
     if (splitName[-1].isdigit()==True):
-        newName = splitName[0]  
+        newlist = splitName[:-1]
+        newName = '_i'.join(map(str, newlist))   
         return newName
     return name
 
